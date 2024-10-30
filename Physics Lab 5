@@ -1,0 +1,41 @@
+# Import necessary libraries
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Function to analyze the v'/v1 ratio for inelastic collision data (m1 = m2 case)
+def analyze_v_prime_over_v1_ratio(data_inelastic):
+    # Step 1: Calculate v'/v1 ratio for each run
+    data_inelastic['v_prime_over_v1'] = data_inelastic['Speed_Ch2'] / data_inelastic['Speed_Ch1']
+    
+    # Step 2: Remove any NaN values to ensure clean calculations
+    v_prime_over_v1_values = data_inelastic['v_prime_over_v1'].dropna()
+    
+    # Step 3: Calculate mean and standard deviation of v'/v1 ratios
+    mean_ratio = v_prime_over_v1_values.mean()
+    std_dev_ratio = v_prime_over_v1_values.std()
+    
+    # Step 4: Calculate fraction of values within mean ± std deviation
+    within_one_std_dev = np.sum((v_prime_over_v1_values >= mean_ratio - std_dev_ratio) & 
+                                (v_prime_over_v1_values <= mean_ratio + std_dev_ratio)) / len(v_prime_over_v1_values)
+    
+    # Step 5: Calculate fraction of values within mean ± 2*std deviation
+    within_two_std_dev = np.sum((v_prime_over_v1_values >= mean_ratio - 2 * std_dev_ratio) & 
+                                (v_prime_over_v1_values <= mean_ratio + 2 * std_dev_ratio)) / len(v_prime_over_v1_values)
+
+    # Step 6: Plot histogram of v'/v1 ratios
+    plt.figure(figsize=(8, 6))
+    plt.hist(v_prime_over_v1_values, bins=10, edgecolor='black', alpha=0.7)
+    plt.xlabel("v'/v1 Ratio")
+    plt.ylabel("Frequency")
+    plt.title("Histogram of v'/v1 Ratios for Inelastic Collision (m1 = m2)")
+    plt.show()
+
+    # Step 7: Print out calculated values for mean, standard deviation, and fractions
+    print("Mean of v'/v1 ratios:", mean_ratio)
+    print("Standard deviation:", std_dev_ratio)
+    print(f"Fraction of measurements within mean ± std deviation: {within_one_std_dev * 100:.2f}%")
+    print(f"Fraction of measurements within mean ± 2*std deviation: {within_two_std_dev * 100:.2f}%")
+
+# Run the analysis function on the inelastic data for m1 = m2 case
+analyze_v_prime_over_v1_ratio(data_inelastic)
